@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import psycopg
 from typing import List, Dict, Any
-from .scraper import scrape_rakumachi
+from app.scraper import scrape_rakumachi
 
 app = FastAPI()
 
