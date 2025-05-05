@@ -1,6 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import psycopg
+from typing import List, Dict, Any
+from .scraper import scrape_rakumachi
 
 app = FastAPI()
 
@@ -16,3 +18,26 @@ app.add_middleware(
 @app.get("/healthz")
 async def healthz():
     return {"status": "ok"}
+
+@app.get("/api/properties", response_model=List[Dict[str, Any]])
+async def get_properties(max_retries: int = 1):
+    """
+    Scrape and return property information from Rakumachi website.
+    
+    The website may block scraping attempts with 403 Forbidden errors.
+    In that case, mock data will be returned for testing purposes.
+    
+    Args:
+        max_retries: Maximum number of retry attempts for scraping (default: 1)
+                     Set to 0 to skip scraping and use mock data directly
+    
+    Returns:
+        List of dictionaries containing property information
+    """
+    url = "https://www.rakumachi.jp/syuuekibukken/area/prefecture/dimAll/?area%5B%5D=27102&area%5B%5D=27103&area%5B%5D=27104&area%5B%5D=27106&area%5B%5D=27107&area%5B%5D=27108&area%5B%5D=27109&area%5B%5D=27111&area%5B%5D=27113&area%5B%5D=27114&area%5B%5D=27115&area%5B%5D=27116&area%5B%5D=27117&area%5B%5D=27118&area%5B%5D=27119&area%5B%5D=27120&area%5B%5D=27121&area%5B%5D=27122&area%5B%5D=27123&area%5B%5D=27124&area%5B%5D=27125&area%5B%5D=27126&area%5B%5D=27127&area%5B%5D=27128&newly=&price_from=&price_to=500&gross_from=&gross_to=&dim%5B%5D=1004&year_from=&year_to=&b_area_from=&b_area_to=&houses_ge=&houses_le=&layout%5B%5D=5&layout%5B%5D=6&layout%5B%5D=7&layout%5B%5D=8&layout%5B%5D=9&layout%5B%5D=10&layout%5B%5D=11&layout%5B%5D=12&layout%5B%5D=13&layout%5B%5D=14&min=10&l_area_from=&l_area_to=&own=1&keyword="
+    
+    try:
+        properties = scrape_rakumachi(url, max_retries=max_retries, retry_delay=3)
+        return properties
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to scrape properties: {str(e)}")

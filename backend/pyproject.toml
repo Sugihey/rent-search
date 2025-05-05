@@ -9,6 +9,9 @@ readme = "README.md"
 python = "^3.12"
 fastapi = {extras = ["standard"], version = "^0.115.12"}
 psycopg = {extras = ["binary"], version = "^3.2.7"}
+requests = "^2.32.3"
+beautifulsoup4 = "^4.13.4"
+fake-useragent = "^2.2.0"
 
 
 [build-system]
