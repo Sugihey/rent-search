@@ -11,7 +11,7 @@ from fake_useragent import UserAgent
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-ua = UserAgent()
+ua = UserAgent(browsers=['Edge', 'Chrome', 'Firefox', 'Safari'])
 
 def get_random_user_agent() -> str:
     """Return a random user agent using fake-useragent."""
@@ -119,6 +119,10 @@ def scrape_rakumachi(url: str, max_retries: int = 5, retry_delay: int = 10) -> L
                     logger.warning("No property blocks found. The page structure might have changed or access might be restricted.")
                     
                 for prop_block in property_blocks:
+                    # PRのブロックは除外
+                    if prop_block.select_one('.Ad__pr'):
+                        continue
+                    
                     property_data = extract_property_data(prop_block, base_url=url)
                     if property_data:
                         properties.append(property_data)
@@ -172,13 +176,14 @@ def extract_property_data(property_block: Union[Tag, BeautifulSoup], base_url: s
             'build_at': None,  # 築年月
             'structure': None, # 建物構造
             'place': None,     # 所在地
+            'access': None,    # 交通
             'stories': None,   # 階数
             'doors': None,     # 総戸数
             'square': None,    # 面積
             'detail_url': None # リンク先URL
         }
         
-        date_elem = property_block.select_one('.registDate')
+        date_elem = property_block.select_one('.propertyBlock__update')
         if date_elem:
             property_data['pub_date'] = date_elem.text.strip()
         
@@ -190,35 +195,52 @@ def extract_property_data(property_block: Union[Tag, BeautifulSoup], base_url: s
         if gross_elem:
             property_data['gross'] = gross_elem.text.strip()
         
-        link_elem = property_block.select_one('a.propertyBlock__link')
+        link_elem = property_block.select_one('a.propertyBlock__content')
         if link_elem and 'href' in link_elem.attrs:
             href = link_elem['href']
             if isinstance(href, str):
                 property_data['detail_url'] = urljoin(base_url, href)
         
-        detail_table = property_block.select_one('.propertyBlock__detail')
+        detail_table = property_block.select_one('.propertyBlock__contents')
         if detail_table:
-            rows = detail_table.select('tr')
+            rows = detail_table.select('span')
             for row in rows:
-                header = row.select_one('th')
-                value = row.select_one('td')
-                
-                if header and value:
-                    header_text = header.text.strip()
+                row_text = row.get_text()
+                if '築年月' in row_text:
+                    print('築年月')
+                    value = row.findNext('span')
                     value_text = value.text.strip()
-                    
-                    if '築年月' in header_text:
-                        property_data['build_at'] = value_text
-                    elif '建物構造' in header_text:
-                        property_data['structure'] = value_text
-                    elif '所在地' in header_text:
-                        property_data['place'] = value_text
-                    elif '階数' in header_text:
-                        property_data['stories'] = value_text
-                    elif '総戸数' in header_text:
-                        property_data['doors'] = value_text
-                    elif '面積' in header_text:
-                        property_data['square'] = value_text
+                    property_data['build_at'] = value_text
+                elif '建物構造' in row_text:
+                    print('建物構造')
+                    value = row.findNext('span')
+                    value_text = value.text.strip()
+                    property_data['structure'] = value_text
+                elif '所在地' in row_text:
+                    print('所在地')
+                    value = row.findNext('span')
+                    value_text = value.text.strip()
+                    property_data['place'] = value_text
+                elif '交通' in row_text:
+                    print('交通')
+                    value = row.findNext('span')
+                    value_text = value.text.strip()
+                    property_data['access'] = value_text
+                elif '階数' in row_text:
+                    print('階数')
+                    value = row.findNext('span')
+                    value_text = value.text.strip()
+                    property_data['stories'] = value_text
+                elif '総戸数' in row_text:
+                    print('総戸数')
+                    value = row.findNext('span')
+                    value_text = value.text.strip()
+                    property_data['doors'] = value_text
+                elif '面積' in row_text:
+                    print('面積')
+                    value = row.findNext('span')
+                    value_text = value.text.strip()
+                    property_data['square'] = value_text
         
         return property_data
     
