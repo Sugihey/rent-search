@@ -1,0 +1,122 @@
+[
+  {
+    "pub_date": "2025/05/01",
+    "price": "50万円",
+    "gross": "5.1%",
+    "build_at": "2010年1月",
+    "structure": "鉄骨造",
+    "place": "大阪府大阪市中央区1丁目1-1",
+    "stories": "7階建",
+    "doors": "39戸",
+    "square": "67㎡",
+    "detail_url": "https://www.rakumachi.jp/syuuekibukken/detail/id100001/"
+  },
+  {
+    "pub_date": "2025/05/02",
+    "price": "100万円",
+    "gross": "5.2%",
+    "build_at": "2010年2月",
+    "structure": "RC造",
+    "place": "大阪府大阪市中央区2丁目2-2",
+    "stories": "6階建",
+    "doors": "20戸",
+    "square": "66㎡",
+    "detail_url": "https://www.rakumachi.jp/syuuekibukken/detail/id100002/"
+  },
+  {
+    "pub_date": "2025/05/03",
+    "price": "150万円",
+    "gross": "5.3%",
+    "build_at": "2010年3月",
+    "structure": "鉄骨造",
+    "place": "大阪府大阪市中央区3丁目3-3",
+    "stories": "6階建",
+    "doors": "18戸",
+    "square": "71㎡",
+    "detail_url": "https://www.rakumachi.jp/syuuekibukken/detail/id100003/"
+  },
+  {
+    "pub_date": "2025/05/04",
+    "price": "200万円",
+    "gross": "5.4%",
+    "build_at": "2010年4月",
+    "structure": "RC造",
+    "place": "大阪府大阪市中央区4丁目4-4",
+    "stories": "2階建",
+    "doors": "41戸",
+    "square": "69㎡",
+    "detail_url": "https://www.rakumachi.jp/syuuekibukken/detail/id100004/"
+  },
+  {
+    "pub_date": "2025/05/05",
+    "price": "250万円",
+    "gross": "5.5%",
+    "build_at": "2010年5月",
+    "structure": "木造",
+    "place": "大阪府大阪市中央区5丁目5-5",
+    "stories": "3階建",
+    "doors": "14戸",
+    "square": "22㎡",
+    "detail_url": "https://www.rakumachi.jp/syuuekibukken/detail/id100005/"
+  },
+  {
+    "pub_date": "2025/05/06",
+    "price": "300万円",
+    "gross": "5.6%",
+    "build_at": "2010年6月",
+    "structure": "木造",
+    "place": "大阪府大阪市中央区6丁目6-6",
+    "stories": "3階建",
+    "doors": "28戸",
+    "square": "62㎡",
+    "detail_url": "https://www.rakumachi.jp/syuuekibukken/detail/id100006/"
+  },
+  {
+    "pub_date": "2025/05/07",
+    "price": "350万円",
+    "gross": "5.7%",
+    "build_at": "2010年7月",
+    "structure": "鉄骨造",
+    "place": "大阪府大阪市中央区7丁目7-7",
+    "stories": "7階建",
+    "doors": "40戸",
+    "square": "84㎡",
+    "detail_url": "https://www.rakumachi.jp/syuuekibukken/detail/id100007/"
+  },
+  {
+    "pub_date": "2025/05/08",
+    "price": "400万円",
+    "gross": "5.8%",
+    "build_at": "2010年8月",
+    "structure": "木造",
+    "place": "大阪府大阪市中央区8丁目8-8",
+    "stories": "7階建",
+    "doors": "30戸",
+    "square": "93㎡",
+    "detail_url": "https://www.rakumachi.jp/syuuekibukken/detail/id100008/"
+  },
+  {
+    "pub_date": "2025/05/09",
+    "price": "450万円",
+    "gross": "5.9%",
+    "build_at": "2010年9月",
+    "structure": "RC造",
+    "place": "大阪府大阪市中央区9丁目9-9",
+    "stories": "3階建",
+    "doors": "29戸",
+    "square": "62㎡",
+    "detail_url": "https://www.rakumachi.jp/syuuekibukken/detail/id100009/"
+  },
+  {
+    "pub_date": "2025/05/10",
+    "price": "500万円",
+    "gross": "6.0%",
+    "build_at": "2010年10月",
+    "structure": "RC造",
+    "place": "大阪府大阪市中央区10丁目10-10",
+    "stories": "10階建",
+    "doors": "42戸",
+    "square": "23㎡",
+    "detail_url": "https://www.rakumachi.jp/syuuekibukken/detail/id100010/"
+  }
+]
