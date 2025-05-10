@@ -212,8 +212,16 @@ async def get_price_trends(days: Optional[int] = Query(30, description="Number o
         
         result = []
         for row in query_result:
+            date_str = ""
+            if hasattr(row.date, 'isoformat'):
+                date_str = row.date.isoformat()
+            elif isinstance(row.date, str):
+                date_str = row.date
+            else:
+                date_str = str(row.date)
+            
             result.append({
-                "date": row.date.isoformat(),
+                "date": date_str,
                 "avg_price": float(row.avg_price) if row.avg_price else 0,
                 "min_price": row.min_price if row.min_price else 0,
                 "max_price": row.max_price if row.max_price else 0,
