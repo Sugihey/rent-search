@@ -196,38 +196,37 @@ async def get_price_trends(days: Optional[int] = Query(30, description="Number o
         
         start_date = datetime.now() - timedelta(days=days)
         
-        query_result = session.query(
-            cast(PriceHistory.scraped_at, Date).label('date'),
-            func.avg(PriceHistory.price).label('avg_price'),
-            func.min(PriceHistory.price).label('min_price'),
-            func.max(PriceHistory.price).label('max_price'),
-            func.count(PriceHistory.id).label('count')
+        price_history_data = session.query(
+            PriceHistory
         ).filter(
             PriceHistory.scraped_at >= start_date
-        ).group_by(
-            cast(PriceHistory.scraped_at, Date)
-        ).order_by(
-            cast(PriceHistory.scraped_at, Date)
         ).all()
         
+        date_groups = {}
+        for item in price_history_data:
+            date_key = item.scraped_at.date().isoformat()
+            
+            if date_key not in date_groups:
+                date_groups[date_key] = {
+                    'prices': [],
+                    'date': date_key
+                }
+            
+            date_groups[date_key]['prices'].append(item.price)
+        
         result = []
-        for row in query_result:
-            date_str = ""
-            if hasattr(row.date, 'isoformat'):
-                date_str = row.date.isoformat()
-            elif isinstance(row.date, str):
-                date_str = row.date
-            else:
-                date_str = str(row.date)
+        for date_key in sorted(date_groups.keys()):
+            group = date_groups[date_key]
+            prices = group['prices']
             
             result.append({
-                "date": date_str,
-                "avg_price": float(row.avg_price) if row.avg_price else 0,
-                "min_price": row.min_price if row.min_price else 0,
-                "max_price": row.max_price if row.max_price else 0,
-                "count": row.count
+                'date': group['date'],
+                'avg_price': sum(prices) / len(prices) if prices else 0,
+                'min_price': min(prices) if prices else 0,
+                'max_price': max(prices) if prices else 0,
+                'count': len(prices)
             })
-            
+        
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve price trends: {str(e)}")
