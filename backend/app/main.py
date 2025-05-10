@@ -1,11 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 import psycopg
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from app.scraper import scrape_rakumachi
 from app.db import save_properties_from_rakumachi, Property, PriceHistory, Session, create_tables
-from sqlalchemy import desc
-from datetime import datetime
+from sqlalchemy import desc, func, cast, Date
+from datetime import datetime, timedelta
 
 app = FastAPI()
 
@@ -110,5 +110,56 @@ async def get_db_properties():
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve properties: {str(e)}")
+    finally:
+        session.close()
+
+@app.get("/api/price-trends")
+async def get_price_trends(days: Optional[int] = Query(30, description="Number of days to look back (7, 30, 180, 365)")):
+    """
+    Get price trends from the database.
+    
+    Aggregates price data from price_history table by date, calculating average, min, max prices and count.
+    
+    Args:
+        days: Number of days to look back (default: 30)
+    
+    Returns:
+        List of dictionaries containing date and aggregated price data
+    """
+    session = Session()
+    try:
+        valid_days = [7, 30, 180, 365]
+        if days not in valid_days:
+            days = 30  # Default to 30 days if invalid
+        
+        start_date = datetime.now() - timedelta(days=days)
+        
+        query_result = session.query(
+            cast(PriceHistory.scraped_at, Date).label('date'),
+            func.avg(PriceHistory.price).label('avg_price'),
+            func.min(PriceHistory.price).label('min_price'),
+            func.max(PriceHistory.price).label('max_price'),
+            func.count(PriceHistory.id).label('count')
+        ).filter(
+            PriceHistory.scraped_at >= start_date
+        ).group_by(
+            cast(PriceHistory.scraped_at, Date)
+        ).order_by(
+            cast(PriceHistory.scraped_at, Date)
+        ).all()
+        
+        result = []
+        for row in query_result:
+            result.append({
+                "date": row.date.isoformat(),
+                "avg_price": float(row.avg_price) if row.avg_price else 0,
+                "min_price": row.min_price if row.min_price else 0,
+                "max_price": row.max_price if row.max_price else 0,
+                "count": row.count
+            })
+            
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve price trends: {str(e)}")
     finally:
         session.close()
