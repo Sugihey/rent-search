@@ -9,6 +9,68 @@ from datetime import datetime, timedelta
 
 app = FastAPI()
 
+@app.on_event("startup")
+async def startup_event():
+    create_tables()
+    add_sample_data()
+
+def add_sample_data():
+    """Add sample data for testing if the database is empty."""
+    session = Session()
+    try:
+        if session.query(Property).count() > 0:
+            return
+        
+        # Create sample properties
+        properties = []
+        for i in range(1, 6):
+            prop = Property(
+                listing_id=1000 + i,
+                address=f"Sample Address {i}",
+                pub_date=datetime.now().date(),
+                access=f"Sample Access {i}",
+                structure="マンション",
+                land_area=25,
+                building_area=35,
+                build_at=datetime(2010, 1, 1).date(),
+                floors=5,
+                detail_url=f"https://example.com/property/{1000 + i}",
+                scraped_at=datetime.now().date()
+            )
+            session.add(prop)
+            properties.append(prop)
+        
+        session.flush()
+        
+        dates = []
+        current_date = datetime.now()
+        for days_ago in range(365, 0, -7):  # Weekly data points for the last year
+            dates.append(current_date - timedelta(days=days_ago))
+        
+        for prop in properties:
+            base_price = 2000 + (prop.id * 100)  # Different base price for each property
+            for i, date in enumerate(dates):
+                price_variation = int((i % 5) * 50)
+                price = base_price + price_variation
+                
+                gross = 5.0 + (i % 10) / 10
+                
+                price_history = PriceHistory(
+                    property_id=prop.id,
+                    price=price,
+                    gross=gross,
+                    scraped_at=date
+                )
+                session.add(price_history)
+        
+        session.commit()
+        print(f"Added sample data: {len(properties)} properties with price history")
+    except Exception as e:
+        session.rollback()
+        print(f"Error adding sample data: {str(e)}")
+    finally:
+        session.close()
+
 # Disable CORS. Do not remove this for full-stack development.
 app.add_middleware(
     CORSMiddleware,
