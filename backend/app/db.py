@@ -3,6 +3,7 @@ Database connection and ORM models for the application.
 """
 import re
 import logging
+import os
 from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime, date
 from sqlalchemy import create_engine, Column, Integer, String, Text, Date, DateTime, Float, ForeignKey, func
@@ -10,13 +11,20 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 import pymysql
 
-from app.config import MYSQL_CONFIG
+from app.config import MYSQL_CONFIG, USE_SQLITE
 from app.scraper import scrape_rakumachi
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-CONNECTION_STRING = f"mysql+pymysql://{MYSQL_CONFIG['user']}:{MYSQL_CONFIG['password']}@{MYSQL_CONFIG['host']}:{MYSQL_CONFIG['port']}/{MYSQL_CONFIG['database']}?charset={MYSQL_CONFIG['charset']}"
+if USE_SQLITE:
+    os.makedirs(os.path.dirname(os.path.abspath(__file__)) + '/../data', exist_ok=True)
+    db_path = os.path.dirname(os.path.abspath(__file__)) + '/../data/rent_search.db'
+    CONNECTION_STRING = f"sqlite:///{db_path}"
+    logger.info(f"Using SQLite database at {db_path}")
+else:
+    CONNECTION_STRING = f"mysql+pymysql://{MYSQL_CONFIG['user']}:{MYSQL_CONFIG['password']}@{MYSQL_CONFIG['host']}:{MYSQL_CONFIG['port']}/{MYSQL_CONFIG['database']}?charset={MYSQL_CONFIG['charset']}"
+    logger.info("Using MySQL database")
 
 engine = create_engine(CONNECTION_STRING, echo=False)
 Session = sessionmaker(bind=engine)

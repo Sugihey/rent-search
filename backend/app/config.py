@@ -2,6 +2,8 @@
 Configuration settings for the application.
 """
 
+USE_SQLITE = True
+
 MYSQL_CONFIG = {
     'host': 'localhost',
     'user': 'rentuser',
