@@ -71,7 +71,7 @@ def create_tables():
 def extract_listing_id(detail_url: str) -> Optional[int]:
     """Extract listing ID from the detail URL."""
     try:
-        match = re.search(r'id(\d+)', detail_url)
+        match = re.search(r'(\d+)/show.html', detail_url)
         if match:
             return int(match.group(1))
         return None
