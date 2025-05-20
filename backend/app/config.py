@@ -2,7 +2,7 @@
 Configuration settings for the application.
 """
 
-USE_SQLITE = True
+USE_SQLITE = False
 
 MYSQL_CONFIG = {
     'host': 'localhost',
