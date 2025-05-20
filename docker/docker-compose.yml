@@ -1,0 +1,26 @@
+services: # （１）
+  db:
+    image: mysql:8.0 # （２）
+    volumes: # （４）
+      - db_data:/var/lib/mysql 
+    restart: always
+    ports: # （７）
+      - "3306:3306"
+    environment: # （６）
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: rent_search
+      MYSQL_USER: rentuser
+      MYSQL_PASSWORD: rentpassword
+
+  # web:
+  #   build: ./rails_project # （３）
+  #   command: bundle exec rails s -p 3000 -b '0.0.0.0' # （９）
+  #   volumes: # （４）
+  #     - .:/myapp
+  #   ports: # （７）
+  #     - "3000:3000"
+  #   depends_on: # （８）
+  #     - db
+      
+volumes: # （５）
+    db_data:
